@@ -4,5 +4,10 @@ python:
 install: 
   - pip install -r test_requirements.txt --use-mirrors
   - pip install coveralls
-script: python aps_purchasing/tests/runtests.py
-after_success: coveralls
+script: 
+  - cd aps_purchasing/tests
+  - ./runtests.py
+  - mv .coverage ../../
+  - cd ../../
+after_success: 
+  - coveralls
