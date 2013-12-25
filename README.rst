@@ -4,6 +4,9 @@ Django APSara Purchasing Module
 .. image:: https://travis-ci.org/bitmazk/django-aps-purchasing.png?branch=master   
    :target: https://travis-ci.org/bitmazk/django-aps-purchasing
 
+.. image:: https://coveralls.io/repos/bitmazk/django-aps-purchasing/badge.png?branch=master 
+   :target: https://coveralls.io/r/bitmazk/django-aps-purchasing?branch=master 
+
 The purchasing module for django-apsara.
 
 Prerequisites
