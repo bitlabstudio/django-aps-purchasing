@@ -6,6 +6,13 @@ Django APSara Purchasing Module
 
 The purchasing module for django-apsara.
 
+Prerequisites
+-------------
+
+This module needs `django-aps-bom <https://github.com/bitmazk/django-aps-bom>`_.
+It will be automatically installed via this modules' `setup.py`.
+
+
 Installation
 ------------
 
