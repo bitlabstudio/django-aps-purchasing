@@ -51,6 +51,7 @@ EXTERNAL_APPS = [
     'django_jasmine',
     'django_nose',
     'django_libs',
+    'aps_bom',
 ]
 
 INTERNAL_APPS = [
