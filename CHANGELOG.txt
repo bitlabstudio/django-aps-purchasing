@@ -1,5 +1,7 @@
 === (ongoing) ===
 
+=== 0.0.2 ===
+
 - Added factories and models 
 - Added admins
 - Added django-aps-bom to test_requirements.txt because travis.ci fails
