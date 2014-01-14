@@ -1,6 +1,7 @@
 === (ongoing) ===
 
 - Updated README
+- Added initial migrations
 
 === 0.0.2 ===
 
