@@ -1,5 +1,7 @@
 === (ongoing) ===
 
+- Updated README
+
 === 0.0.2 ===
 
 - Added factories and models 

@@ -25,12 +25,13 @@ To get the latest commit from GitHub
 
     pip install -e git+git://github.com/bitmazk/django-aps-purchasing.git#egg=aps_purchasing
 
-Add ``aps_purchasing`` to your ``INSTALLED_APPS``
+Add ``aps_bom`` and ``aps_purchasing`` to your ``INSTALLED_APPS``
 
 .. code-block:: python
 
     INSTALLED_APPS = (
         ...,
+        'aps_bom'
         'aps_purchasing',
     )
 
