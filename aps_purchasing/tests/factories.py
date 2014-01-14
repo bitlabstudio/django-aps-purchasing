@@ -13,7 +13,7 @@ class AMLFactory(factory.DjangoModelFactory):
     """Factory for the ``AML`` model."""
     FACTORY_FOR = models.AML
 
-    IPN = factory.SubFactory(IPNFactory)
+    ipn = factory.SubFactory(IPNFactory)
     manufacturer = factory.SubFactory(
         'aps_purchasing.tests.factories.ManufacturerFactory')
 
@@ -44,7 +44,7 @@ class DPNFactory(factory.DjangoModelFactory):
     code = factory.Sequence(lambda n: 'code {0}'.format(n))
     name = factory.Sequence(lambda n: 'name {0}'.format(n))
     distributor = factory.SubFactory(DistributorFactory)
-    MPN = factory.SubFactory(
+    mpn = factory.SubFactory(
         'aps_purchasing.tests.factories.MPNFactory')
 
 
@@ -61,7 +61,7 @@ class MPNFactory(factory.DjangoModelFactory):
     FACTORY_FOR = models.MPN
 
     manufacturer = factory.SubFactory(ManufacturerFactory)
-    PKU = 1
+    pku = 1
     unit = factory.SubFactory(
         'aps_purchasing.tests.factories.PackagingUnitFactory')
 
@@ -85,7 +85,7 @@ class PriceFactory(factory.DjangoModelFactory):
 
     quotation_item = factory.SubFactory(
         'aps_purchasing.tests.factories.QuotationItemFactory')
-    MOQ = 1
+    moq = 1
     price = 1
     currency = factory.SubFactory(CurrencyFactory)
 
@@ -98,7 +98,7 @@ class QuotationFactory(factory.DjangoModelFactory):
     ref_number = factory.Sequence(lambda n: 'ref {0}'.format(n))
     issuance_date = factory.LazyAttribute(lambda n: now())
     expiry_date = factory.LazyAttribute(lambda n: now())
-    completed = False
+    is_completed = False
 
 
 class QuotationItemFactory(factory.DjangoModelFactory):
@@ -106,6 +106,6 @@ class QuotationItemFactory(factory.DjangoModelFactory):
     FACTORY_FOR = models.QuotationItem
 
     quotation = factory.SubFactory(QuotationFactory)
-    MPN = factory.SubFactory(MPNFactory)
+    mpn = factory.SubFactory(MPNFactory)
     min_lead_time = 1
     max_lead_time = 2

@@ -9,11 +9,11 @@ class AML(models.Model):
 
     List of IPNs that may only be purchased through approved manufacturers.
 
-    :IPN: The IPN instance.
+    :ipn: The IPN instance.
     :manufacturer: A manufacturer who is approved for the given IPN.
 
     """
-    IPN = models.ForeignKey(
+    ipn = models.ForeignKey(
         'aps_bom.IPN',
         verbose_name=_('Internal Part Number'),
     )
@@ -22,6 +22,13 @@ class AML(models.Model):
         'aps_purchasing.Manufacturer',
         verbose_name=('Manufacturer'),
     )
+
+    class Meta:
+        verbose_name = _('AML')
+        verbose_name_plural = _('AMLs')
+
+    def __unicode__(self):
+        return u'{0} - {1}'.format(self.ipn, self.manufacturer)
 
 
 class Currency(models.Model):
@@ -47,6 +54,13 @@ class Currency(models.Model):
         verbose_name=_('Sign'),
         max_length=1,
     )
+
+    class Meta:
+        verbose_name = _('Currency')
+        verbose_name_plural = _('Currencies')
+
+    def __unicode__(self):
+        return self.iso_code
 
 
 class Distributor(models.Model):
@@ -106,16 +120,19 @@ class Distributor(models.Model):
         default=True,
     )
 
+    def __unicode__(self):
+        return self.name
+
 
 class DPN(models.Model):
     """
     Distributor Part Number.
 
     :code: The code of this DPN.
-    :IPN: The internal part number this DPN is mapped to.
+    :ipn: The internal part number this DPN is mapped to.
     :distributor: The distributor who sells this part.
     :name: The name of this part.
-    :MPN: The manufacturer part number for this part.
+    :mpn: The manufacturer part number for this part.
 
     """
     code = models.CharField(
@@ -123,7 +140,7 @@ class DPN(models.Model):
         max_length=50,
     )
 
-    IPN = models.ForeignKey(
+    ipn = models.ForeignKey(
         'aps_bom.IPN',
         verbose_name=_('Internal Part Number'),
         related_name='DPNs',
@@ -141,11 +158,18 @@ class DPN(models.Model):
         max_length=128,
     )
 
-    MPN = models.ForeignKey(
+    mpn = models.ForeignKey(
         'aps_purchasing.MPN',
         verbose_name=_('Manufacturer Part Number'),
         related_name='DPNs',
     )
+
+    class Meta:
+        verbose_name = _('DPN')
+        verbose_name_plural = _('DPNs')
+
+    def __unicode__(self):
+        return self.code
 
 
 class Manufacturer(models.Model):
@@ -157,7 +181,7 @@ class Manufacturer(models.Model):
 
     """
     code = models.CharField(
-        verbose_name=_('Manufacturer'),
+        verbose_name=_('Code'),
         max_length=50,
     )
 
@@ -165,6 +189,9 @@ class Manufacturer(models.Model):
         verbose_name=_('Name'),
         max_length=128,
     )
+
+    def __unicode__(self):
+        return self.code
 
 
 class MPN(models.Model):
@@ -174,7 +201,7 @@ class MPN(models.Model):
     :code: The code of this MPN.
     :manufacturer: The manufacturer of this part.
     :name: The name of this part.
-    :PKU: The amount of parts in one pacakge unit.
+    :pku: The amount of parts in one pacakge unit.
     :unit: The package unit of this part.
 
     """
@@ -193,7 +220,7 @@ class MPN(models.Model):
         max_length=128,
     )
 
-    PKU = models.FloatField(
+    pku = models.FloatField(
         verbose_name=_('Amount per packaging unit'),
     )
 
@@ -201,6 +228,13 @@ class MPN(models.Model):
         'aps_purchasing.PackagingUnit',
         verbose_name=_('PackagingUnit'),
     )
+
+    class Meta:
+        verbose_name = _('MPN')
+        verbose_name_plural = _('MPNs')
+
+    def __unicode__(self):
+        return self.code
 
 
 class PackagingUnit(models.Model):
@@ -214,6 +248,9 @@ class PackagingUnit(models.Model):
         verbose_name=_('Name'),
         max_length=128,
     )
+
+    def __unicode__(self):
+        return self.name
 
 
 class PaymentTerm(models.Model):
@@ -234,13 +271,16 @@ class PaymentTerm(models.Model):
         max_length=128,
     )
 
+    def __unicode__(self):
+        return self.code
+
 
 class Price(models.Model):
     """
     Price.
 
     :quotation_item: The quotation item this price belongs to.
-    :MOQ: TODO: Describe this field
+    :moq: TODO: Describe this field
     :price: The price.
     :currency: The currency for this price.
 
@@ -251,7 +291,7 @@ class Price(models.Model):
         related_name='prices',
     )
 
-    MOQ = models.DecimalField(
+    moq = models.DecimalField(
         verbose_name=_('MOQ'),
         max_digits=11,
         decimal_places=5,
@@ -268,6 +308,10 @@ class Price(models.Model):
         verbose_name=_('Currency'),
         related_name='prices',
     )
+
+    def __unicode__(self):
+        return u'{0}: {1} {2}'.format(
+            self.quotation_item, self.price, self.currency)
 
 
 class Quotation(models.Model):
@@ -300,9 +344,12 @@ class Quotation(models.Model):
         verbose_name=_('Expiry date'),
     )
 
-    completed = models.BooleanField(
+    is_completed = models.BooleanField(
         verbose_name=_('Completed'),
     )
+
+    def __unicode__(self):
+        return self.ref_number
 
 
 class QuotationItem(models.Model):
@@ -310,7 +357,7 @@ class QuotationItem(models.Model):
     Quotation item.
 
     :quotation: The quotation this item belongs to.
-    :MPN: The MPN this quotation belongs refers to.
+    :mpn: The MPN this quotation belongs refers to.
     :min_lead_time: TODO: Describe this field.
     :max_lead_time: TODO: Describe this field.
 
@@ -321,7 +368,7 @@ class QuotationItem(models.Model):
         related_name='quotation_items',
     )
 
-    MPN = models.ForeignKey(
+    mpn = models.ForeignKey(
         MPN,
         verbose_name=_('Manufacturer Part Number'),
         related_name='quotation_items',
@@ -334,3 +381,6 @@ class QuotationItem(models.Model):
     max_lead_time = models.PositiveIntegerField(
         verbose_name=_('Maximum lead time'),
     )
+
+    def __unicode__(self):
+        return u'{0} - {1}'.format(self.quotation, self.mpn)

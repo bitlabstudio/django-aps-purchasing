@@ -1,3 +1,4 @@
+django-aps-bom
 django-nose
 coverage
 django_libs
