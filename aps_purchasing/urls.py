@@ -10,6 +10,6 @@ urlpatterns = patterns(
         name='aps_purchasing_quotation_upload'),
     url(r'^report/(?P<pk>\d+)/$', ReportView.as_view(),
         name='aps_purchasing_report'),
-#     url(r'^report/', ReportView.as_view(),
-#         name='aps_purchasing_report'),
+    url(r'^report/', ReportView.as_view(),
+        name='aps_purchasing_report'),
 )
