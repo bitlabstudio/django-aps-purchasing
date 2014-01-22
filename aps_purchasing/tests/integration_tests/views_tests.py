@@ -10,14 +10,16 @@ from django.utils.timezone import now
 
 from django_libs.tests.mixins import ViewTestMixin
 from django_libs.tests.factories import UserFactory
+from aps_bom.tests.factories import BOMFactory
 
 from ..factories import (
     CurrencyFactory,
     DistributorFactory,
     ManufacturerFactory,
+    PriceFactory,
 )
 from ...models import Quotation, QuotationItem, Price
-from ...views import QuotationUploadView
+from ...views import QuotationUploadView, ReportView
 
 
 class QuotationUploadViewTestCase(ViewTestMixin, TestCase):
@@ -90,3 +92,33 @@ class QuotationUploadViewTestCase(ViewTestMixin, TestCase):
         self.assertEqual(Price.objects.count(), 4, msg=(
             'After posting again, there should still be three Prices in'
             ' the database.'))
+
+
+class ReportViewTestCase(ViewTestMixin, TestCase):
+    """Tests for the ``ReportView`` view class."""
+    longMessage = True
+
+    def get_view_name(self):
+        return 'aps_purchasing_report'
+
+    def get_view_kwargs(self):
+        return {'pk': self.bom.pk}
+
+    def setUp(self):
+        self.user = UserFactory()
+        self.bom = BOMFactory()
+        self.price = PriceFactory()
+        self.item = self.price.quotation_item
+        self.quotation = self.item.quotation
+        self.req = RequestFactory().get(self.get_url())
+        self.req.user = self.user
+        self.view = ReportView.as_view()
+
+    def test_view(self):
+        resp = self.view(self.req, **self.get_view_kwargs())
+        self.assertEqual(resp.status_code, 200, msg=(
+            'When called while logged in, the view should be callable.'))
+
+        resp = self.view(self.req)
+        self.assertEqual(resp.status_code, 200, msg=(
+            'When called without kwargs, the view should be callable.'))
