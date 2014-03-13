@@ -191,7 +191,7 @@ class Manufacturer(models.Model):
     )
 
     def __unicode__(self):
-        return self.code
+        return self.name
 
 
 class MPN(models.Model):
@@ -357,6 +357,7 @@ class QuotationItem(models.Model):
     Quotation item.
 
     :quotation: The quotation this item belongs to.
+    :manufacturer: The manufacturer mannufacturing this product.
     :mpn: The MPN this quotation belongs refers to.
     :min_lead_time: TODO: Describe this field.
     :max_lead_time: TODO: Describe this field.
@@ -366,6 +367,13 @@ class QuotationItem(models.Model):
         Quotation,
         verbose_name=_('Quotation'),
         related_name='quotation_items',
+    )
+
+    manufacturer = models.ForeignKey(
+        Manufacturer,
+        verbose_name=_('Manufacturer'),
+        related_name='quotations',
+        blank=True, null=True,
     )
 
     mpn = models.ForeignKey(

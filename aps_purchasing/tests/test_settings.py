@@ -63,3 +63,6 @@ INSTALLED_APPS = EXTERNAL_APPS + INTERNAL_APPS
 COVERAGE_MODULE_EXCLUDES += EXTERNAL_APPS
 
 SECRET_KEY = 'foobar'
+
+import logging
+logging.getLogger("factory").setLevel(logging.WARN)

@@ -106,6 +106,7 @@ class QuotationItemFactory(factory.DjangoModelFactory):
     FACTORY_FOR = models.QuotationItem
 
     quotation = factory.SubFactory(QuotationFactory)
+    manufacturer = factory.SubFactory(ManufacturerFactory)
     mpn = factory.SubFactory(MPNFactory)
     min_lead_time = 1
     max_lead_time = 2

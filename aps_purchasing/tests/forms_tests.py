@@ -21,14 +21,12 @@ class QuotationUploadFormTestCase(TestCase):
 
     def setUp(self):
         self.distributor = DistributorFactory()
-        self.manufacturer = ManufacturerFactory()
 
         self.quotation_file = open(os.path.join(
             settings.APP_ROOT, 'tests/files/Quotation.csv'))
 
         self.data = {
             'distributor': self.distributor.pk,
-            'manufacturer': self.manufacturer.pk,
             'ref_number': 'REF123',
             'issuance_date': now(),
             'expiry_date': now(),
@@ -42,11 +40,20 @@ class QuotationUploadFormTestCase(TestCase):
     def test_form(self):
         form = QuotationUploadForm(data=self.data)
         self.assertFalse(form.is_valid(), msg='The form should not be valid.')
+
         form = QuotationUploadForm(data=self.data, files=self.files)
         self.assertFalse(form.is_valid(), msg=(
             'Without all the currencies in the DB, the form should not be'
             ' valid.'))
         self.usd = CurrencyFactory(iso_code='USD')
+
+        form = QuotationUploadForm(data=self.data, files=self.files)
+        self.assertFalse(form.is_valid(), msg=(
+            'Without all the manufacturers in the DB, the form should not be'
+            ' valid.'))
+        ManufacturerFactory(name='Samsung')
+        ManufacturerFactory(name='TDK')
+
         form = QuotationUploadForm(data=self.data, files=self.files)
         self.assertTrue(form.is_valid(), msg=(
             'The form should be valid. Errors: {0}'.format(form.errors)))

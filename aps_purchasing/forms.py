@@ -3,7 +3,7 @@ from csv import DictReader
 
 from django import forms
 from django.core.urlresolvers import reverse
-from django.utils.translation import ugettext as __, ugettext_lazy as _
+from django.utils.translation import ugettext as __
 
 from .models import (
     Currency,
@@ -20,14 +20,11 @@ class QuotationUploadForm(forms.ModelForm):
     """Upload form for quotation csv files to create or update Quotations."""
 
     quotation_file = forms.FileField()
-    manufacturer = forms.ModelChoiceField(
-        queryset=Manufacturer.objects.all(),
-        label=_('Manufacturer'),
-    )
 
     def append_error(self, error_message):
         if '__all__' in self.errors:
-            self.errors['__all__'].append(error_message)
+            if error_message not in self.errors['__all__']:
+                self.errors['__all__'].append(error_message)
         else:
             self.errors['__all__'] = [error_message]
 
@@ -41,12 +38,9 @@ class QuotationUploadForm(forms.ModelForm):
         try:
             model_kwargs = cleaned_data.copy()
             model_kwargs.pop('quotation_file')
-            model_kwargs.pop('manufacturer')
             self.instance = Quotation.objects.get(**model_kwargs)
         except Quotation.DoesNotExist:
             pass
-
-        manufacturer = cleaned_data.get('manufacturer')
 
         # initiate the csv dictreader with the uploaded file
         csv_file = self.files.get('quotation_file')
@@ -63,8 +57,34 @@ class QuotationUploadForm(forms.ModelForm):
         for line_dict in self.reader:
             quotation_itemdict = {}
             price_dict = {}
-            for key, value in line_dict.iteritems():
-                if key == 'mpn':
+            # here we make use of the fact, that the manufacturer is always
+            # parsed first, meaning, that if manufacturer still is None, when
+            # we reach the mpn value, we know, that it hasn't been found
+            # previously
+            manufacturer = None
+            line_list = [pair for pair in line_dict.iteritems()]
+            # just to make sure, tha sequence of columns didn't change
+            # if manufacturer would at some point occur before mpn, we wouldn't
+            # need to reverse the order of keys
+            if line_dict.keys().index('manufacturer') > line_dict.keys().index(
+                    'mpn'):
+                line_list.reverse()
+            for key, value in line_list:
+                if key == 'manufacturer':
+                    try:
+                        manufacturer = Manufacturer.objects.get(name=value)
+                    except Manufacturer.DoesNotExist:
+                        this_link = (
+                            '<a href="{0}" target="_blank">{0}</a>'.format(
+                                reverse(
+                                    'admin:aps_purchasing_manufacturer_add')))
+                        self.append_error(__(
+                            'The manufacturer "{0}" does not exist.'
+                            ' Please create it first. {1}'.format(
+                                value, this_link)))
+                    else:
+                        quotation_itemdict[key] = manufacturer
+                if key == 'mpn' and manufacturer is not None:
                     pckg_unit = PackagingUnit.objects.get_or_create(
                         name=line_dict.get('unit'))[0]
                     try:
@@ -114,6 +134,5 @@ class QuotationUploadForm(forms.ModelForm):
     class Meta:
         model = Quotation
         fields = (
-            'distributor', 'manufacturer', 'is_completed',
-            'ref_number', 'issuance_date', 'expiry_date',
-            'quotation_file', )
+            'distributor', 'is_completed', 'ref_number', 'issuance_date',
+            'expiry_date', 'quotation_file', )

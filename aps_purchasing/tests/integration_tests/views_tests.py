@@ -32,7 +32,8 @@ class QuotationUploadViewTestCase(ViewTestMixin, TestCase):
     def setUp(self):
         self.user = UserFactory()
         self.distributor = DistributorFactory()
-        self.manufacturer = ManufacturerFactory()
+        ManufacturerFactory(name='Samsung')
+        ManufacturerFactory(name='TDK')
         self.usd = CurrencyFactory(iso_code='USD')
 
         self.quotation_file = open(os.path.join(
@@ -40,7 +41,6 @@ class QuotationUploadViewTestCase(ViewTestMixin, TestCase):
 
         self.data = {
             'distributor': self.distributor.pk,
-            'manufacturer': self.manufacturer.pk,
             'ref_number': 'REF123',
             'issuance_date': now(),
             'expiry_date': now(),
@@ -61,7 +61,7 @@ class QuotationUploadViewTestCase(ViewTestMixin, TestCase):
             'When called anonymously, the view should redirect.'))
         self.assertEqual(resp['Location'], '{0}?next={1}'.format(
             settings.LOGIN_URL, self.get_url()), msg=(
-                'When called anonymously, the view should redirect to login.'))
+            'When called anonymously, the view should redirect to login.'))
 
         self.get_req.user = self.user
         resp = self.view(self.get_req)

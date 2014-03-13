@@ -78,10 +78,11 @@ class QuotationAdmin(admin.ModelAdmin):
 
 
 class QuotationItemAdmin(admin.ModelAdmin):
-    list_display = ('quotation', 'mpn', 'min_lead_time', 'max_lead_time')
+    list_display = ('quotation', 'manufacturer', 'mpn', 'min_lead_time',
+                    'max_lead_time')
     search_fields = (
         'quotation__ref_number', 'mpn__code', 'mpn__name' 'min_lead_time',
-        'max_lead_time'
+        'max_lead_time', 'manufacturer__name'
     )
 
 
