@@ -2,13 +2,11 @@
 import os
 
 from django.conf import settings
-from django.contrib.auth.models import AnonymousUser
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
-from django.test.client import RequestFactory
 from django.utils.timezone import now
 
-from django_libs.tests.mixins import ViewTestMixin
+from django_libs.tests.mixins import ViewRequestFactoryTestMixin
 from django_libs.tests.factories import UserFactory
 from aps_bom.tests.factories import BOMFactory
 
@@ -19,12 +17,13 @@ from ..factories import (
     PriceFactory,
 )
 from ...models import Quotation, QuotationItem, Price
-from ...views import QuotationUploadView, ReportView
+from ... import views
 
 
-class QuotationUploadViewTestCase(ViewTestMixin, TestCase):
+class QuotationUploadViewTestCase(ViewRequestFactoryTestMixin, TestCase):
     """Tests for the ``QuotationUploadView`` view class."""
     longMessage = True
+    view_class = views.QuotationUploadView
 
     def get_view_name(self):
         return 'aps_purchasing_quotation_upload'
@@ -49,28 +48,12 @@ class QuotationUploadViewTestCase(ViewTestMixin, TestCase):
                                                  self.quotation_file.read()),
         }
 
-        self.get_req = RequestFactory().get(self.get_url())
-        self.post_req = RequestFactory().post(self.get_url(), data=self.data)
-        self.post_req.user = self.user
-        self.view = QuotationUploadView.as_view()
-
     def test_view(self):
-        self.get_req.user = AnonymousUser()
-        resp = self.view(self.get_req)
-        self.assertEqual(resp.status_code, 302, msg=(
-            'When called anonymously, the view should redirect.'))
-        self.assertEqual(resp['Location'], '{0}?next={1}'.format(
-            settings.LOGIN_URL, self.get_url()), msg=(
-            'When called anonymously, the view should redirect to login.'))
+        self.should_redirect_to_login_when_anonymous()
 
-        self.get_req.user = self.user
-        resp = self.view(self.get_req)
-        self.assertEqual(resp.status_code, 200, msg=(
-            'When called while logged in, the view should be callable.'))
+        self.is_callable(user=self.user)
 
-        resp = self.view(self.post_req)
-        self.assertEqual(resp.status_code, 302, msg=(
-            'When posting with valid data, the view should redirect.'))
+        self.is_postable(user=self.user, data=self.data, to=self.get_url())
 
         self.assertEqual(Quotation.objects.count(), 1, msg=(
             'After a post with valid data, there should be one Quotation in'
@@ -82,7 +65,10 @@ class QuotationUploadViewTestCase(ViewTestMixin, TestCase):
             'After a post with valid data, there should be three Prices in'
             ' the database.'))
 
-        resp = self.view(self.post_req)
+        self.quotation_file.seek(0)
+        self.data['quotation_file'] = SimpleUploadedFile(
+            'Quotation.csv', self.quotation_file.read())
+        self.is_postable(user=self.user, data=self.data, to=self.get_url())
         self.assertEqual(Quotation.objects.count(), 1, msg=(
             'After posting again, there should stil be one Quotation in the'
             ' database.'))
@@ -94,9 +80,10 @@ class QuotationUploadViewTestCase(ViewTestMixin, TestCase):
             ' the database.'))
 
 
-class ReportViewTestCase(ViewTestMixin, TestCase):
+class ReportViewTestCase(ViewRequestFactoryTestMixin, TestCase):
     """Tests for the ``ReportView`` view class."""
     longMessage = True
+    view_class = views.ReportView
 
     def get_view_name(self):
         return 'aps_purchasing_report'
@@ -110,15 +97,11 @@ class ReportViewTestCase(ViewTestMixin, TestCase):
         self.price = PriceFactory()
         self.item = self.price.quotation_item
         self.quotation = self.item.quotation
-        self.req = RequestFactory().get(self.get_url())
-        self.req.user = self.user
-        self.view = ReportView.as_view()
 
     def test_view(self):
-        resp = self.view(self.req, **self.get_view_kwargs())
-        self.assertEqual(resp.status_code, 200, msg=(
-            'When called while logged in, the view should be callable.'))
-
-        resp = self.view(self.req)
-        self.assertEqual(resp.status_code, 200, msg=(
-            'When called without kwargs, the view should be callable.'))
+        self.is_callable(user=self.user)
+        self.is_callable(user=self.user, kwargs={})
+        self.redirects(user=self.user, kwargs={}, data={
+            'part_number': self.bom.ipn.code}, to=self.get_url())
+        self.is_callable(user=self.user, kwargs={}, data={
+            'part_number': 'wrongcode'})
