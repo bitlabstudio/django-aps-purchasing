@@ -1,6 +1,8 @@
 === (ongoing) ===
 
 
+- made query for manufacturer case insensitive on quotation upload
+
 === 0.3 ===
 
 - added BOM search in ReportView

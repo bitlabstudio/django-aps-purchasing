@@ -72,7 +72,9 @@ class QuotationUploadForm(forms.ModelForm):
             for key, value in line_list:
                 if key == 'manufacturer':
                     try:
-                        manufacturer = Manufacturer.objects.get(name=value)
+                        manufacturer = Manufacturer.objects.get(
+                            name__iexact=value,
+                        )
                     except Manufacturer.DoesNotExist:
                         this_link = (
                             '<a href="{0}" target="_blank">{0}</a>'.format(
