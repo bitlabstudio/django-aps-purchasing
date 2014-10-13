@@ -1,6 +1,8 @@
 === (ongoing) ===
 
 
+=== 0.3.2 ===
+
 - Showing IPN in QuotationItemAdmin
 
 === 0.3.1 ===
