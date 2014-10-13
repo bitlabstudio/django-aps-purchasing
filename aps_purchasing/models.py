@@ -143,14 +143,14 @@ class DPN(models.Model):
     ipn = models.ForeignKey(
         'aps_bom.IPN',
         verbose_name=_('Internal Part Number'),
-        related_name='DPNs',
+        related_name='dpns',
         null=True, blank=True,
     )
 
     distributor = models.ForeignKey(
         'aps_purchasing.Distributor',
         verbose_name=_('Distributor'),
-        related_name='DPNs',
+        related_name='dpns',
     )
 
     name = models.CharField(
@@ -161,7 +161,7 @@ class DPN(models.Model):
     mpn = models.ForeignKey(
         'aps_purchasing.MPN',
         verbose_name=_('Manufacturer Part Number'),
-        related_name='DPNs',
+        related_name='dpns',
     )
 
     class Meta:
