@@ -1,6 +1,8 @@
 === (ongoing) ===
 
 
+- Showing IPN in QuotationItemAdmin
+
 === 0.3.1 ===
 
 - made query for manufacturer case insensitive on quotation upload

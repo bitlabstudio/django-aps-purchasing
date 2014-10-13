@@ -78,12 +78,16 @@ class QuotationAdmin(admin.ModelAdmin):
 
 
 class QuotationItemAdmin(admin.ModelAdmin):
-    list_display = ('quotation', 'manufacturer', 'mpn', 'min_lead_time',
-                    'max_lead_time')
+    list_display = ('quotation', 'manufacturer', 'ipns', 'mpn',
+                    'min_lead_time', 'max_lead_time')
     search_fields = (
         'quotation__ref_number', 'mpn__code', 'mpn__name' 'min_lead_time',
         'max_lead_time', 'manufacturer__name'
     )
+
+    def ipns(self, obj):
+        return ', '.join([
+            aml.ipn.code for aml in obj.mpn.manufacturer.aml_set.all()])
 
 
 admin.site.register(models.AML, AMLAdmin)
