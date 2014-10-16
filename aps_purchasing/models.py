@@ -309,9 +309,20 @@ class Price(models.Model):
         related_name='prices',
     )
 
+    class Meta:
+        ordering = ('price', )
+
     def __unicode__(self):
         return u'{0}: {1} {2}'.format(
             self.quotation_item, self.price, self.currency)
+
+    def get_ipn(self):
+        distributor = self.quotation_item.quotation.distributor
+        qs = Price.objects.filter(
+            quotation_item__mpn__DPNs__distributor=distributor)
+        qs = qs.values_list(
+            'quotation_item__mpn__DPNs__ipn__code').distinct()[0][0]
+        return qs
 
 
 class Quotation(models.Model):
