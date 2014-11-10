@@ -58,7 +58,7 @@ class ReportView(DetailView):
         ctx = super(ReportView, self).get_context_data(**kwargs)
         if self.object is not None:
             prices = Price.objects.filter(
-                quotation_item__manufacturer__aml__ipn__boms=self.object)
+                quotation_item__mpn__DPNs__ipn__bomitems__bom=self.object)
             ctx.update({
                 'prices': prices,
             })

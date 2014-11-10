@@ -50,7 +50,7 @@
         <tbody>
             {% for price in prices %}
                 <tr>
-                    <td>{% for ipn in price.quotation_item.mpn.manufacturer.aml_set.all %}{{ ipn.ipn.code }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+                    <td>{{ price.get_ipn }}{% for ipn in price.quotation_item.mpn.manufacturer.aml_set.all %}{{ ipn.ipn.code }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
                     <td>{{ price.quotation_item.mpn.code }}</td>
                     <td>{{ price.quotation_item.mpn.manufacturer }}</td>
                     <td>{{ price.quotation_item.quotation.distributor }}</td>
