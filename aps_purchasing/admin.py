@@ -70,11 +70,16 @@ class PriceAdmin(admin.ModelAdmin):
     list_filter = ('currency__iso_code', )
 
 
+class QuotationItemInline(admin.TabularInline):
+    model = models.QuotationItem
+
+
 class QuotationAdmin(admin.ModelAdmin):
     list_display = (
         'distributor', 'ref_number', 'issuance_date', 'expiry_date',
         'is_completed'
     )
+    inlines = [QuotationItemInline]
 
 
 class QuotationItemAdmin(admin.ModelAdmin):

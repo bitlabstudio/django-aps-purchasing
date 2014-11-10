@@ -1,5 +1,6 @@
 === ongoing (0.3.X - to be released as 0.4) ===
 
+- Added QuotationItemInline to QuotationAdmin
 - Fixed query for Prices on the Report view
 - Showing IPN in QuotationItemAdmin
 - made query for manufacturer case insensitive on quotation upload
